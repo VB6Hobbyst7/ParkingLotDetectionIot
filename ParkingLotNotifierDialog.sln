@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCVBridge", "OpenCVBridg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpBridgeCollection", "CSharpBridgeCollection\CSharpBridgeCollection.csproj", "{04E8274C-5707-4632-8781-393434CD6634}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "UIApp", "UIApp\UIApp.vbproj", "{7F0323EA-4D6C-45B2-BE9A-178B940FB793}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,26 @@ Global
 		{04E8274C-5707-4632-8781-393434CD6634}.Release|x64.Build.0 = Release|x64
 		{04E8274C-5707-4632-8781-393434CD6634}.Release|x86.ActiveCfg = Release|x86
 		{04E8274C-5707-4632-8781-393434CD6634}.Release|x86.Build.0 = Release|x86
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|ARM.ActiveCfg = Debug|ARM
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|ARM.Build.0 = Debug|ARM
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|ARM.Deploy.0 = Debug|ARM
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|x64.ActiveCfg = Debug|x64
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|x64.Build.0 = Debug|x64
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|x64.Deploy.0 = Debug|x64
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|x86.ActiveCfg = Debug|x86
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|x86.Build.0 = Debug|x86
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Debug|x86.Deploy.0 = Debug|x86
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|Any CPU.ActiveCfg = Release|x86
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|ARM.ActiveCfg = Release|ARM
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|ARM.Build.0 = Release|ARM
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|ARM.Deploy.0 = Release|ARM
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|x64.ActiveCfg = Release|x64
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|x64.Build.0 = Release|x64
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|x64.Deploy.0 = Release|x64
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|x86.ActiveCfg = Release|x86
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|x86.Build.0 = Release|x86
+		{7F0323EA-4D6C-45B2-BE9A-178B940FB793}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
