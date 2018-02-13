@@ -10,9 +10,14 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0">
             <CaptureElement Name="PreviewControl" Stretch="Uniform" Width="424" Height="240" VerticalAlignment="Center" HorizontalAlignment="Center" FocusVisualPrimaryBrush="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
             <GridView Name="LayerControl" Width="424" Height="240" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single">
                 <GridView.ItemContainerStyle>
@@ -28,6 +33,8 @@
                     </DataTemplate>
                 </GridView.ItemTemplate>
             </GridView>
+        </Grid>
+        <Grid Grid.Row="1" Grid.Column="0">
             <StackPanel>
                 <Slider Minimum="8" Maximum="64" Name="SliderWidth" HorizontalAlignment="Right" Width="100"/>
                 <Slider Minimum="5" Maximum="40" Name="SliderHeight" HorizontalAlignment="Right" Width="100"/>
@@ -45,7 +52,12 @@
                 </GridView.ItemTemplate>
             </GridView>
         </Grid>
-        <CommandBar Grid.Row="1">
+        <Grid Grid.RowSpan="2" Grid.Column="1">
+            <ListView Width="400">
+                
+            </ListView>
+        </Grid>
+        <CommandBar Grid.Row="2" Grid.ColumnSpan="2">
             <AppBarButton Icon="Play" Label="Resume" Name="btnResume" Click="btnResume_Click"/>
             <AppBarButton Icon="Camera" Label="Snapshot" Name="btnCamera" Click="btnCamera_Click"/>
         </CommandBar>
