@@ -27,6 +27,8 @@ Public NotInheritable Class MainPage
     Private RectInWidth As Integer = 16
     Private RectInHeight As Integer = 10
 
+    Private _snapshots As New List(Of Snapshot)
+
     Public Sub New()
 
         ' Dieser Aufruf ist für den Designer erforderlich.
@@ -436,7 +438,8 @@ Public NotInheritable Class MainPage
         Dim InputBitmap As SoftwareBitmap = Nothing
         Try
             ' Create SoftwareBitmap
-            SnapshotControl.Source = Await ConvertSoftwareBitmapToSoftwareBitmapSourceAsync(Await CapturePhotoAsync())
+            Dim source = Await ConvertSoftwareBitmapToSoftwareBitmapSourceAsync(Await CapturePhotoAsync())
+            SnapshotControl.Source = source
             DebugMessage("SoftwareBitmap created", "Picture")
 
             ' Create Photofile
@@ -464,6 +467,11 @@ Public NotInheritable Class MainPage
 
             gvColors.ItemsSource = Nothing
             gvColors.ItemsSource = Await GetColorsFromImage(PhotoFile)
+
+            _snapshots.Add(New Snapshot(source, "", DateTime.Now.ToString("dddd, HH:mm:ss")))
+
+            lvSnapshots.ItemsSource = Nothing
+            lvSnapshots.ItemsSource = _snapshots
 
         Catch ex As Exception
             DebugMessage(ex.Message)
