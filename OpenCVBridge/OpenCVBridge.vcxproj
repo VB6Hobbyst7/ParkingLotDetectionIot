@@ -225,9 +225,9 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\cs\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets" Condition="Exists('..\..\cs\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets')" />
+    <!-- <Import Project="..\..\cs\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets" Condition="Exists('..\..\cs\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets')" />
     <Import Project="..\..\cs\packages\OpenCV.Win.ImgProc.310.6.1\build\native\opencv.win.imgproc.targets" Condition="Exists('..\..\cs\packages\OpenCV.Win.ImgProc.310.6.1\build\native\opencv.win.imgproc.targets')" />
-    <Import Project="..\..\cs\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets" Condition="Exists('..\..\cs\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets')" />
+    <Import Project="..\..\cs\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets" Condition="Exists('..\..\cs\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets')" /> -->
     <Import Project="..\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets" Condition="Exists('..\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets')" />
     <Import Project="..\packages\OpenCV.Win.ImgProc.310.6.1\build\native\opencv.win.imgproc.targets" Condition="Exists('..\packages\OpenCV.Win.ImgProc.310.6.1\build\native\opencv.win.imgproc.targets')" />
     <Import Project="..\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets" Condition="Exists('..\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets')" />
@@ -236,9 +236,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\cs\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\cs\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets'))" />
+   <!--  <Error Condition="!Exists('..\..\cs\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\cs\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets'))" />
     <Error Condition="!Exists('..\..\cs\packages\OpenCV.Win.ImgProc.310.6.1\build\native\opencv.win.imgproc.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\cs\packages\OpenCV.Win.ImgProc.310.6.1\build\native\opencv.win.imgproc.targets'))" />
-    <Error Condition="!Exists('..\..\cs\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\cs\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets'))" />
+    <Error Condition="!Exists('..\..\cs\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\cs\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets'))" /> -->
     <Error Condition="!Exists('..\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCV.Win.Core.310.6.1\build\native\opencv.win.core.targets'))" />
     <Error Condition="!Exists('..\packages\OpenCV.Win.ImgProc.310.6.1\build\native\opencv.win.imgproc.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCV.Win.ImgProc.310.6.1\build\native\opencv.win.imgproc.targets'))" />
     <Error Condition="!Exists('..\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCV.Win.Video.310.6.1\build\native\opencv.win.video.targets'))" />
