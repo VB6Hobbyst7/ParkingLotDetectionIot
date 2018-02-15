@@ -42,9 +42,6 @@ Public NotInheritable Class MainPage
 
     Private Async Sub MainPage_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         Try
-            SliderHeight.Value = RectInHeight
-            SliderWidth.Value = RectInWidth
-
             Await StartPreviewAsync()
 
         Catch ex As Exception
@@ -300,13 +297,13 @@ Public NotInheritable Class MainPage
         End Try
     End Function
 
-    Private Async Function ConvertSoftwareBitmapToStorageFileAsync(ByVal sbitmap As SoftwareBitmap) As Task(Of StorageFile)
+    Private Async Function ConvertSoftwareBitmapToStorageFileAsync(ByVal sbitmap As SoftwareBitmap, Optional ByVal fileCounter As Integer = 0) As Task(Of StorageFile)
         Dim _pictureFolder As StorageLibrary = Nothing
         Dim _photoFile As StorageFile = Nothing
         Dim Encoder As BitmapEncoder = Nothing
         Try
             _pictureFolder = Await Windows.Storage.StorageLibrary.GetLibraryAsync(Windows.Storage.KnownLibraryId.Pictures)
-            _photoFile = Await _pictureFolder.SaveFolder.CreateFileAsync("photoCont.jpg", CreationCollisionOption.ReplaceExisting)
+            _photoFile = Await _pictureFolder.SaveFolder.CreateFileAsync(String.Format("photoCont{0}.jpg", fileCounter), CreationCollisionOption.ReplaceExisting)
 
             Using Stream As IRandomAccessStream = Await _photoFile.OpenAsync(FileAccessMode.ReadWrite)
                 ' Create an encoder with the desired format
@@ -334,7 +331,7 @@ Public NotInheritable Class MainPage
         End Try
     End Function
 
-    Private Async Function GetColorsFromImage(ByVal photoFile As StorageFile) As Task(Of List(Of ImageColor))
+    Private Async Function GetColorsFromImageAsListAsync(ByVal photoFile As StorageFile) As Task(Of List(Of ImageColor))
         Dim Colors As List(Of ImageColor) = Nothing
         Dim Decoder As BitmapDecoder = Nothing
         Dim topColor As QuantizedColor = Nothing
@@ -370,6 +367,28 @@ Public NotInheritable Class MainPage
             Return Colors
         Finally
             Colors = Nothing
+            Decoder = Nothing
+            topColor = Nothing
+        End Try
+    End Function
+
+    Private Async Function GetColorFromImageAsync(ByVal photoFile As StorageFile) As Task(Of QuantizedColor)
+        Dim Decoder As BitmapDecoder = Nothing
+        Dim topColor As QuantizedColor = Nothing
+        Try
+            Using Stream = Await photoFile.OpenStreamForReadAsync()
+                Decoder = Await BitmapDecoder.CreateAsync(Stream.AsRandomAccessStream())
+
+                ' Get Mixedup Top Color
+                topColor = Await _colorThief.GetColor(Decoder)
+
+                Return topColor
+
+            End Using
+
+        Catch ex As Exception
+            Return topColor
+        Finally
             Decoder = Nothing
             topColor = Nothing
         End Try
@@ -424,7 +443,17 @@ Public NotInheritable Class MainPage
     End Function
 
     Private Async Sub btnCamera_Click(sender As Object, e As RoutedEventArgs)
-        Await CaptureSnapshot()
+        btnCamera.IsEnabled = False
+        Try
+            Await CaptureSnapshot()
+
+            Task.Delay(TimeSpan.FromSeconds(10)).Wait() ' Treshold for filesystem
+
+        Catch ex As Exception
+            DebugMessage(ex.Message)
+        Finally
+            btnCamera.IsEnabled = True
+        End Try
     End Sub
 
     Private Async Sub btnResume_Click(sender As Object, e As RoutedEventArgs)
@@ -433,42 +462,50 @@ Public NotInheritable Class MainPage
 
     Private Async Function CaptureSnapshot() As Task
         Dim PhotoFile As StorageFile = Nothing
+        Dim PartPhotoFile As StorageFile = Nothing
         Dim PrcessedSoftwareBitmap As SoftwareBitmap = Nothing
         Dim OriginalSoftwareBitmap As SoftwareBitmap = Nothing
         Dim InputBitmap As SoftwareBitmap = Nothing
         Try
-            ' Create SoftwareBitmap
+            ' Create SoftwareBitmap for static preview picture
             Dim source = Await ConvertSoftwareBitmapToSoftwareBitmapSourceAsync(Await CapturePhotoAsync())
             SnapshotControl.Source = source
             DebugMessage("SoftwareBitmap created", "Picture")
 
-            ' Create Photofile
+            ' Create Photofile for later processing
             PhotoFile = Await CapturePhotoFileAsync()
             DebugMessage(PhotoFile?.Path, "Picture created")
 
-            ' Crop Photofile
-            For Each Item As RectDect In LayerControl.Items
-                If Item.IsSelected = True Then
+            ' Crop and process Photofile
+            _snapshots = New List(Of Snapshot)
+            Dim photoCounter As Integer = 1
+
+            For Each Item As RectDect In LayerControl.Items.Where(Function(x) DirectCast(x, RectDect).IsSelected = True)
+                Try
+                    ' Get part of picture by selected grid range
                     InputBitmap = Await GetPartOfImage(PhotoFile, Item.Width, Item.Height, Item.X, Item.Y)
-                End If
+
+                    ' Create contours with MSOpenCVBridge
+                    OriginalSoftwareBitmap = SoftwareBitmap.Convert(InputBitmap, BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied)
+                    PrcessedSoftwareBitmap = New SoftwareBitmap(BitmapPixelFormat.Bgra8, OriginalSoftwareBitmap.PixelWidth, OriginalSoftwareBitmap.PixelHeight, BitmapAlphaMode.Premultiplied)
+                    _openHelper.Contours(OriginalSoftwareBitmap, PrcessedSoftwareBitmap)
+                    'ProcessedControl.Source = Await ConvertSoftwareBitmapToSoftwareBitmapSourceAsync(PrcessedSoftwareBitmap)
+                    DebugMessage("MS OpenCV Bridge processed", "Picture processed")
+
+                    PartPhotoFile = Await ConvertSoftwareBitmapToStorageFileAsync(PrcessedSoftwareBitmap, photoCounter)
+                    DebugMessage(PartPhotoFile?.Path, "Picture created")
+
+                    _snapshots.Add(New Snapshot(Await ConvertSoftwareBitmapToSoftwareBitmapSourceAsync(InputBitmap), Await GetColorFromImageAsync(PartPhotoFile), DateTime.Now.ToString))
+
+                    photoCounter += 1
+
+                Catch ex As Exception
+                    InputBitmap = Nothing
+                    OriginalSoftwareBitmap = Nothing
+                    PrcessedSoftwareBitmap = Nothing
+                    PartPhotoFile = Nothing
+                End Try
             Next
-
-            ' Create contours with MSOpenCVBridge
-            'InputBitmap = Await CapturePhotoAsync()
-
-            OriginalSoftwareBitmap = SoftwareBitmap.Convert(InputBitmap, BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied)
-            PrcessedSoftwareBitmap = New SoftwareBitmap(BitmapPixelFormat.Bgra8, OriginalSoftwareBitmap.PixelWidth, OriginalSoftwareBitmap.PixelHeight, BitmapAlphaMode.Premultiplied)
-            _openHelper.Contours(OriginalSoftwareBitmap, PrcessedSoftwareBitmap)
-            ProcessedControl.Source = Await ConvertSoftwareBitmapToSoftwareBitmapSourceAsync(PrcessedSoftwareBitmap)
-            DebugMessage("MS OpenCV Bridge processed", "Picture processed")
-
-            PhotoFile = Await ConvertSoftwareBitmapToStorageFileAsync(PrcessedSoftwareBitmap)
-            DebugMessage(PhotoFile?.Path, "Picture created")
-
-            gvColors.ItemsSource = Nothing
-            gvColors.ItemsSource = Await GetColorsFromImage(PhotoFile)
-
-            _snapshots.Add(New Snapshot(source, "", DateTime.Now.ToString("dddd, HH:mm:ss")))
 
             lvSnapshots.ItemsSource = Nothing
             lvSnapshots.ItemsSource = _snapshots
@@ -477,6 +514,7 @@ Public NotInheritable Class MainPage
             DebugMessage(ex.Message)
         Finally
             PhotoFile = Nothing
+            PartPhotoFile = Nothing
             PrcessedSoftwareBitmap = Nothing
             OriginalSoftwareBitmap = Nothing
             InputBitmap = Nothing
@@ -497,12 +535,4 @@ Public NotInheritable Class MainPage
             Next
         End If
     End Sub
-
-    'Private Sub SliderWidth_ValueChanged(sender As Object, e As RangeBaseValueChangedEventArgs) Handles SliderWidth.ValueChanged
-    '    RectInWidth = SliderWidth.Value
-    'End Sub
-
-    'Private Sub SliderHeight_ValueChanged(sender As Object, e As RangeBaseValueChangedEventArgs) Handles SliderHeight.ValueChanged
-    '    RectInHeight = SliderHeight.Value
-    'End Sub
 End Class

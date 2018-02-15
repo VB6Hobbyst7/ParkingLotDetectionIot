@@ -35,10 +35,6 @@
             </GridView>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="0">
-            <StackPanel>
-                <Slider Minimum="8" Maximum="64" Name="SliderWidth" HorizontalAlignment="Right" Width="100"/>
-                <Slider Minimum="5" Maximum="40" Name="SliderHeight" HorizontalAlignment="Right" Width="100"/>
-            </StackPanel>
             <Image Name="SnapshotControl" Stretch="Uniform" Width="200" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10"/>
             <Image Name="CropedControl" Stretch="Uniform" Width="200" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10"/>
             <Image Name="ProcessedControl" Stretch="Uniform" Width="200" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10"/>

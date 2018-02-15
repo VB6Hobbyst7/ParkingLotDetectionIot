@@ -1,4 +1,6 @@
-﻿Public Class Snapshot
+﻿Imports ColorThiefDotNet
+
+Public Class Snapshot
 
     Private _Thumbnail As SoftwareBitmapSource
     Public Property Thumbnail() As SoftwareBitmapSource
@@ -7,6 +9,16 @@
         End Get
         Set(ByVal value As SoftwareBitmapSource)
             _Thumbnail = value
+        End Set
+    End Property
+
+    Private _Color As QuantizedColor
+    Public Property Color() As QuantizedColor
+        Get
+            Return _Color
+        End Get
+        Set(ByVal value As QuantizedColor)
+            _Color = value
         End Set
     End Property
 
@@ -34,9 +46,10 @@
 
     End Sub
 
-    Public Sub New(ByVal thumbnail As SoftwareBitmapSource, ByVal value As Integer, ByVal text As String)
+    Public Sub New(ByVal thumbnail As SoftwareBitmapSource, ByVal color As QuantizedColor, ByVal text As String)
         _Thumbnail = thumbnail
-        _Value = value
+        _Color = color
+        _Value = _Color.Color.B
         _Text = text
     End Sub
 
