@@ -10,7 +10,7 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -18,35 +18,35 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" Grid.Column="0" Margin="10">
-            <CaptureElement Name="PreviewControl" Stretch="Uniform" Width="424" Height="240" FocusVisualPrimaryBrush="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <GridView Name="LayerControl" Width="424" Height="240" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <GridView.ItemContainerStyle>
-                    <Style TargetType="GridViewItem">
-                        <Setter Property="Margin" Value="0,0,0,0"/>
-                        <Setter Property="MinWidth" Value="0"/>
-                        <Setter Property="MinHeight" Value="0"/>
-                    </Style>
-                </GridView.ItemContainerStyle>
-                <GridView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Width="{Binding Width}" Height="{Binding Height}" Background="{Binding BorderColor}" Opacity="0.2" Margin="0" Padding="0"/>
-                    </DataTemplate>
-                </GridView.ItemTemplate>
-            </GridView>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="500"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <CaptureElement Grid.Row="0" Name="PreviewControl" Stretch="Fill" Width="640" Height="480" FocusVisualPrimaryBrush="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <GridView Grid.Row="0" Name="LayerControl" Width="640" Height="480" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <GridView.ItemContainerStyle>
+                        <Style TargetType="GridViewItem">
+                            <Setter Property="Margin" Value="0,0,0,0"/>
+                            <Setter Property="MinWidth" Value="0"/>
+                            <Setter Property="MinHeight" Value="0"/>
+                        </Style>
+                    </GridView.ItemContainerStyle>
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="{Binding Width}" Height="{Binding Height}" Background="{Binding BorderColor}" Opacity="0.2" Margin="0" Padding="0"/>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <Button Name="btnSelect" Content="Select All" Click="btnSelect_Click"/>
+                    <Button Name="btnDeSelect" Content="Deselect All" Click="btnDeSelect_Click"/>
+                    <Button Name="btnAutoSelect" Content="Auto Select" Click="btnAutoSelect_Click"/>
+                </StackPanel>
+            </Grid>
         </Grid>
         <Grid Grid.Row="1" Grid.Column="0">
-            <Image Name="SnapshotControl" Stretch="Uniform" Width="200" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10"/>
-            <Image Name="CropedControl" Stretch="Uniform" Width="200" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10"/>
-            <Image Name="ProcessedControl" Stretch="Uniform" Width="200" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10"/>
-            <TextBlock Text="" Foreground="{ThemeResource SystemControlForegroundAccentBrush}" Name="txtCarDetectionIndex" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="60" FontWeight="ExtraLight"/>
-            <TextBlock Text="" Foreground="{ThemeResource SystemControlForegroundAccentBrush}" Name="txtCarDetectionText" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" FontWeight="ExtraLight" Margin="0,60"/>
-            <GridView Name="gvColors" Width="200" Height="200" VerticalAlignment="Top" HorizontalAlignment="Left">
-                <GridView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Background="{Binding ImgC}" Width="20" Height="20" Margin="2"/>
-                    </DataTemplate>
-                </GridView.ItemTemplate>
-            </GridView>
+            <Image Name="SnapshotControl" Stretch="Uniform" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10"/>
         </Grid>
         <Grid Grid.RowSpan="2" Grid.Column="1">
             <ListView Name="lvSnapshots">

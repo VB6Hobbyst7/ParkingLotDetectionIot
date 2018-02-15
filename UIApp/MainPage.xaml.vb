@@ -115,7 +115,7 @@ Public NotInheritable Class MainPage
                 RectGrid.Add(New RectDect With {.IndexWidth = indexWidth,
                     .IndexHeight = indexHeight,
                              .IsSelected = False,
-                             .BorderColor = New Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red),
+                             .BorderColor = New SolidColorBrush(Windows.UI.Colors.Red),
                              .Width = width,
                              .Height = height,
                              .X = GetCoordinateX(.IndexWidth, .Width),
@@ -139,15 +139,6 @@ Public NotInheritable Class MainPage
             props = Nothing
         End Try
     End Function
-
-    'Private Function GetIndex(ByVal totalCount As Integer, ByVal MaxIndex As Integer) As Integer
-    '    Dim r = totalCount Mod MaxIndex
-    '    If r = 0 Then
-    '        Return MaxIndex
-    '    Else
-    '        Return r
-    '    End If
-    'End Function
 
     Private Function GetCoordinateX(ByVal index As Integer, ByVal width As Integer) As Integer
         If index = 1 Then
@@ -352,12 +343,12 @@ Public NotInheritable Class MainPage
 
                 Dim CarDetectionValue As Integer = topColor.Color.B
                 If CarDetectionValue > 90 Then
-                    txtCarDetectionText.Text = "something in the way..."
+                    ' txtCarDetectionText.Text = "something in the way..."
                 Else
-                    txtCarDetectionText.Text = "free space..."
+                    ' txtCarDetectionText.Text = "free space..."
                 End If
 
-                txtCarDetectionIndex.Text = CarDetectionValue.ToString
+                ' txtCarDetectionIndex.Text = CarDetectionValue.ToString
 
                 Return Colors
 
@@ -419,10 +410,6 @@ Public NotInheritable Class MainPage
 
                     Await Encoder.FlushAsync()
 
-                    Dim bImg As BitmapImage = New BitmapImage()
-                    bImg.SetSource(ras)
-                    CropedControl.Source = bImg
-
                     ' Get the SoftwareBitmap representation of the file
                     Decoder = Await BitmapDecoder.CreateAsync(ras)
                     Return Await Decoder.GetSoftwareBitmapAsync()
@@ -445,9 +432,12 @@ Public NotInheritable Class MainPage
     Private Async Sub btnCamera_Click(sender As Object, e As RoutedEventArgs)
         btnCamera.IsEnabled = False
         Try
-            Await CaptureSnapshot()
+            If LayerControl.Items.Where(Function(x) DirectCast(x, RectDect).IsSelected = True).Count > 0 Then
+                Await CaptureSnapshot()
 
-            Task.Delay(TimeSpan.FromSeconds(10)).Wait() ' Treshold for filesystem
+                Task.Delay(TimeSpan.FromSeconds(10)).Wait() ' Treshold for filesystem
+
+            End If
 
         Catch ex As Exception
             DebugMessage(ex.Message)
@@ -489,7 +479,6 @@ Public NotInheritable Class MainPage
                     OriginalSoftwareBitmap = SoftwareBitmap.Convert(InputBitmap, BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied)
                     PrcessedSoftwareBitmap = New SoftwareBitmap(BitmapPixelFormat.Bgra8, OriginalSoftwareBitmap.PixelWidth, OriginalSoftwareBitmap.PixelHeight, BitmapAlphaMode.Premultiplied)
                     _openHelper.Contours(OriginalSoftwareBitmap, PrcessedSoftwareBitmap)
-                    'ProcessedControl.Source = Await ConvertSoftwareBitmapToSoftwareBitmapSourceAsync(PrcessedSoftwareBitmap)
                     DebugMessage("MS OpenCV Bridge processed", "Picture processed")
 
                     PartPhotoFile = Await ConvertSoftwareBitmapToStorageFileAsync(PrcessedSoftwareBitmap, photoCounter)
@@ -534,5 +523,94 @@ Public NotInheritable Class MainPage
                 DirectCast(sender, GridView).SelectedIndex = -1
             Next
         End If
+    End Sub
+
+    Private Sub btnSelect_Click(sender As Object, e As RoutedEventArgs)
+        'For Each item As RectDect In LayerControl.Items
+        '    item.IsSelected = True
+        'Next
+        Try
+            If LayerControl.Items.Count > 0 Then
+                For Each Item In LayerControl.Items
+                    DirectCast(Item, RectDect).IsSelected = True
+                    DirectCast(Item, RectDect).BorderColor = New Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.LightGreen)
+                    LayerControl.SelectedIndex = -1
+                Next
+            End If
+
+
+        Catch ex As Exception
+            DebugMessage(ex.Message)
+        End Try
+    End Sub
+
+    Private Sub btnDeSelect_Click(sender As Object, e As RoutedEventArgs)
+        If LayerControl.Items.Count > 0 Then
+            For Each Item In LayerControl.Items
+                DirectCast(Item, RectDect).IsSelected = False
+                DirectCast(Item, RectDect).BorderColor = New Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red)
+                LayerControl.SelectedIndex = -1
+            Next
+        End If
+    End Sub
+
+    Private Async Sub btnAutoSelect_Click(sender As Object, e As RoutedEventArgs)
+        Dim PhotoFile As StorageFile = Nothing
+        Dim PartPhotoFile As StorageFile = Nothing
+        Dim PrcessedSoftwareBitmap As SoftwareBitmap = Nothing
+        Dim OriginalSoftwareBitmap As SoftwareBitmap = Nothing
+        Dim InputBitmap As SoftwareBitmap = Nothing
+        Try
+            ' Create Photofile for later processing
+            PhotoFile = Await CapturePhotoFileAsync()
+            DebugMessage(PhotoFile?.Path, "Picture created")
+
+            ' Crop and process Photofile
+            _snapshots = New List(Of Snapshot)
+            Dim photoCounter As Integer = 1
+
+            For Each Item As RectDect In LayerControl.Items
+                Try
+                    ' Get part of picture by selected grid range
+                    InputBitmap = Await GetPartOfImage(PhotoFile, Item.Width, Item.Height, Item.X, Item.Y)
+
+                    ' Create contours with MSOpenCVBridge
+                    OriginalSoftwareBitmap = SoftwareBitmap.Convert(InputBitmap, BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied)
+                    PrcessedSoftwareBitmap = New SoftwareBitmap(BitmapPixelFormat.Bgra8, OriginalSoftwareBitmap.PixelWidth, OriginalSoftwareBitmap.PixelHeight, BitmapAlphaMode.Premultiplied)
+                    _openHelper.Contours(OriginalSoftwareBitmap, PrcessedSoftwareBitmap)
+                    DebugMessage("MS OpenCV Bridge processed", "Picture processed")
+
+                    PartPhotoFile = Await ConvertSoftwareBitmapToStorageFileAsync(PrcessedSoftwareBitmap, photoCounter)
+                    DebugMessage(PartPhotoFile?.Path, "Picture created")
+
+                    Dim r = Await GetColorFromImageAsync(PartPhotoFile)
+                    If r.Color.B > 90 Then
+                        DirectCast(Item, RectDect).IsSelected = True
+                        DirectCast(Item, RectDect).BorderColor = New Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.LightGreen)
+                    Else
+                        DirectCast(Item, RectDect).IsSelected = False
+                        DirectCast(Item, RectDect).BorderColor = New Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red)
+                    End If
+                    LayerControl.SelectedIndex = -1
+
+                    photoCounter += 1
+
+                Catch ex As Exception
+                    InputBitmap = Nothing
+                    OriginalSoftwareBitmap = Nothing
+                    PrcessedSoftwareBitmap = Nothing
+                    PartPhotoFile = Nothing
+                End Try
+            Next
+
+        Catch ex As Exception
+            DebugMessage(ex.Message)
+        Finally
+            PhotoFile = Nothing
+            PartPhotoFile = Nothing
+            PrcessedSoftwareBitmap = Nothing
+            OriginalSoftwareBitmap = Nothing
+            InputBitmap = Nothing
+        End Try
     End Sub
 End Class
